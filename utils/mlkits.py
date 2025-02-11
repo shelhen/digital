@@ -11,11 +11,13 @@
 # @Brief: 插入一段描述。
 """
 import tensorflow as tf
-from tensorflow.keras import backend, saving
+from tensorflow.keras import backend
+
+# , saving
 
 
-@saving.register_keras_serializable(package="Custom")
-def r2_score(y_true, y_pred):
+# @saving.register_keras_serializable(package="Custom")
+def r2(y_true, y_pred):
     """
     r2还可以用mse来计算.
     y_mean = np.mean(y_true)
