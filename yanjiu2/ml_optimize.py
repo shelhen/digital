@@ -12,8 +12,12 @@
 树模型的大致调参数思路，先确定大致的参数范围，然后基于网格搜索进行模型精调，若所有参数都放置在较大的参数范围内，则计算时间会非常长。
 因此考虑创建几个函数，用于辅助调参，输出更为细致的参数范围。
 """
+import os
+import random
 import pandas as pd
 import numpy as np
+import tensorflow as tf
+from tensorflow.keras import backend, saving
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
@@ -23,10 +27,56 @@ from sklearn.model_selection import GridSearchCV, KFold
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
-import tensorflow as tf
-from tensorflow.keras import backend, saving
+
+
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['PYTHONHASHSEED'] = '0'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+tf.random.set_seed(123)
+random.seed(12345)
+
+
+
 
 tf.random.set_seed(123)
+
+
+@saving.register_keras_serializable(package="Custom")
+def r2_score(y_true, y_pred):
+    """
+    r2还可以用mse来计算.
+    y_mean = np.mean(y_true)
+    r2 = 1 - (mse * len(y_true)) / np.sum((y_true - y_mean)**2)
+    :param y_true:
+    :param y_pred:
+    :param sample_weight:
+    :return:
+    """
+    ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
+    ss_tot = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
+    # 加入 epsilon 防止除零错误
+    return 1 - ss_res / (ss_tot + backend.epsilon())
+
+
+def feature_importance_sensitivity(model, sample):
+    """
+    通过分别对每个特征施加微小扰动，观察模型预测值的变化程度，考虑了所有模型层的影响，适合非线性模型，但是计算复杂度较高。
+    :param model:
+    :param sample:输入样本，形状 (n_samples, n_features)
+    :return:
+    """
+    baseline_prediction = model.predict(sample)
+    sensitivities = []
+
+    for i in range(sample.shape[1]):
+        X_perturbed = sample.copy()
+        X_perturbed[:, i] += 1e-4  # 对第 i 个特征增加一个微小扰动
+        perturbed_prediction = model.predict(X_perturbed)
+        sensitivity = np.mean(np.abs(perturbed_prediction - baseline_prediction))
+        sensitivities.append(sensitivity)
+
+    return np.array(sensitivities)
 
 
 def single_param_search(_mod, param_name, _range, **kwargs):
@@ -44,21 +94,7 @@ def single_param_search(_mod, param_name, _range, **kwargs):
     _ind = max(temp_scores, key=temp_scores.get)
     return _ind, temp_scores
 
-@saving.register_keras_serializable(package="Custom")
-def r2_score(y_true, y_pred):
-    """
-    r2还可以用mse来计算.
-    y_mean = np.mean(y_true)
-    r2 = 1 - (mse * len(y_true)) / np.sum((y_true - y_mean)**2)
-    :param y_true:
-    :param y_pred:
-    :param sample_weight:
-    :return:
-    """
-    ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
-    ss_tot = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
-    # 加入 epsilon 防止除零错误
-    return 1 - ss_res / (ss_tot + backend.epsilon())
+
 
 
 def total_params_search(param_grid, _mod, **kwargs):
