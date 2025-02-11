@@ -33,15 +33,6 @@ def parse(data):
         6: "民企",
         7: "事业单位"
     }
-    STM = {
-        1: "未投递",
-        2: "已投递",
-        3: "已笔试",
-        4: "已面试",
-        5: "面试通过",
-        6: "已挂",
-        7: "暂不投递"
-    }
     JTM = {
         '1': "暑假实习",
         '2': "日常实习",
@@ -57,21 +48,54 @@ def parse(data):
     }
     result = []
     for rec in data["data"]['recruitmentInfoList']:
-        location = rec.get('location', None)
+        end_time = rec['endTime']
+        if end_time and end_time.strip()=="招满即止":
+            end_time = "2025-09-01"
+        else:
+            end_time = rec['endTime']
+        if rec["companyType"]==3:
+            continue
+        elif "教育" in rec["companyName"]:
+            continue
+        elif "律师" in rec["companyName"]:
+            continue
+        elif "事务所" in rec["companyName"]:
+            continue
+        elif "人保" in rec["companyName"]:
+            continue
+        elif "财险" in rec["companyName"]:
+            continue
+        elif "会计" in rec["companyName"]:
+            continue
+        elif "教育" in rec["companyName"]:
+            continue
+        elif "邮政" in rec["companyName"]:
+            continue
+        elif "医院" in rec["companyName"]:
+            continue
+        elif "银行" in rec["companyName"]:
+            continue
+        elif "证券" in rec["companyName"]:
+            continue
+        elif "中铁" in rec["companyName"]:
+            continue
+        elif end_time and end_time.split('-')[0]==2024:
+            continue
+        elif rec['recruitmentType'] in ['1', "2"]:
+            continue
         item = dict(
-            公司名称=rec["companyName"],
+            公司名称=rec["companyName"].strip(),
             公司类型=CTM.get(rec["companyType"], "无"),
             岗位类型=rec['jobType'],
-            工作地点=location if location else "无",
+            工作地点=rec["location"],
             招聘类型=JTM.get(rec['recruitmentType'], "无"),
             招聘公告=rec['announcement'],
             相关链接=rec['relatedLink'],
             学历要求=RTM.get(rec['recruitmentTarget'], "无"),
             发布日期=rec['releaseTime'],
-            截止日期=rec['endTime']
+            截止日期=end_time
         )
         print(item)
-        # if
         result.append(item)
     return result
 
@@ -94,7 +118,7 @@ def crawl(i):
 
 
 if __name__ == '__main__':
-    for num in range(1, 217):
+    for num in range(1, 200):
         result = crawl(num)
         if result is None:
             print("第{0}页爬取失败。".format(num))
