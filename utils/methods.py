@@ -12,6 +12,25 @@
 """
 import pandas as pd
 import numpy as np
+import tensorflow as tf
+from tensorflow.keras import backend
+
+
+# @saving.register_keras_serializable(package="Custom")
+def r2(y_true, y_pred):
+    """
+    r2还可以用mse来计算.
+    y_mean = np.mean(y_true)
+    r2 = 1 - (mse * len(y_true)) / np.sum((y_true - y_mean)**2)
+    :param y_true:
+    :param y_pred:
+    :param sample_weight:
+    :return:
+    """
+    ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
+    ss_tot = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
+    # 加入 epsilon 防止除零错误
+    return 1 - ss_res / (ss_tot + backend.epsilon())
 
 
 def _entropy(matrix):
@@ -36,7 +55,7 @@ def _entropy(matrix):
 
 def entropy(matrix):
     _matrix = matrix.copy(deep=True).replace(0, 0.001)
-    _matrix = (_matrix - _matrix.min())/ (_matrix.max() - _matrix.min())
+    _matrix = (_matrix - _matrix.min()) / (_matrix.max() - _matrix.min())
     p, i = _matrix.shape
     _matrix = _matrix / _matrix.sum()
     _matrix.replace(0, 0.0001, inplace=True)
@@ -46,12 +65,12 @@ def entropy(matrix):
 
 def topsis(matrix, W):
     CCs = []
-    m,n =matrix.shape
-    pis = np.square(np.ones((m,n)) - matrix)
+    m, n = matrix.shape
+    pis = np.square(np.ones((m, n)) - matrix)
     nis = np.square(matrix)
     for i in range(m):
-        posd = np.sqrt((pis.iloc[i, :]*W).sum())
-        negd = np.sqrt((nis.iloc[i, :]*W).sum())
+        posd = np.sqrt((pis.iloc[i, :] * W).sum())
+        negd = np.sqrt((nis.iloc[i, :] * W).sum())
         CCs.append(negd / (posd + negd))
     return pd.Series(CCs, index=matrix.index)
 
@@ -75,7 +94,7 @@ def var_contribution(data):
     eigdf = eigdf.sort_values("Eigvalue")[::-1]
     eig_df = eigdf[["Eigvalue"]]
     # 计算每个特征值的方差贡献率，存入varcontribution中
-    eig_df["Proportion"] = eig_df.apply(lambda x: x/eig_df["Eigvalue"].sum())
+    eig_df["Proportion"] = eig_df.apply(lambda x: x / eig_df["Eigvalue"].sum())
     # 累积方差贡献率
     eig_df["Cumulative"] = eig_df["Proportion"].cumsum()
     # 将特征值、方差贡献率，累积方差贡献率写入DataFrame
@@ -88,14 +107,14 @@ def best_worst_fij(matrix, vec):
     a ：指标值矩阵
     b ：表示指标是极大型还是极小型的数组
     """
-    f = np.zeros((vec.shape[0], 2)) # 初始化最优值矩阵
+    f = np.zeros((vec.shape[0], 2))  # 初始化最优值矩阵
     for i in range(vec.shape[0]):
         if vec[i] == 'max':
-            f[i, 0] = matrix.max(axis=0)[i] # 最优值
-            f[i, 1] = matrix.min(axis=0)[i] # 最劣值
+            f[i, 0] = matrix.max(axis=0)[i]  # 最优值
+            f[i, 1] = matrix.min(axis=0)[i]  # 最劣值
         elif vec[i] == 'min':
-            f[i, 0] = matrix.min(axis=0)[i] # 最优值
-            f[i, 1] = matrix.max(axis=0)[i] # 最劣值
+            f[i, 0] = matrix.min(axis=0)[i]  # 最优值
+            f[i, 1] = matrix.max(axis=0)[i]  # 最劣值
     return f
 
 
@@ -150,8 +169,8 @@ def vikor(matrix, vec, w, v=0.5):
 def gra(matrix, w):
     # 熵权-灰色关联
     A1 = matrix.max()
-    data = (matrix-A1).abs()
+    data = (matrix - A1).abs()
     max_ = data.max().max()
     min_ = data.min().min()
-    df_r = (min_*w+data)/(max_*w+data)
+    df_r = (min_ * w + data) / (max_ * w + data)
     return df_r.mean(axis=1)
