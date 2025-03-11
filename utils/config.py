@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 
 
 base_path = Path(r'C://datas//年报文本')
-config_path = f"{os.path.abspath(os.path.dirname(__file__))}\\indicator.ini"
+config_path =  os.path.join(os.path.abspath(os.path.dirname(__file__)), "indicator.ini")
 config = configparser.RawConfigParser()
 config.read(config_path, encoding='utf8')
 KeywordBy = {
@@ -53,8 +53,7 @@ KeywordBy = {
                      '智能系统', '智能化', '自动控制', '自动监测', '自动监控', '自动检测', '自动生产', '数控', '一体化',
                      '集成化', '集成解决方案', '集成控制', '集成系统', '工业云', '未来工厂', '智能故障诊断',
                      '生命周期管理', '生产制造执行系统', '虚拟化', '虚拟制造'],
-        '现代信息系统z': ['信息共享', '信息管理', '信息集成', '信息软件', '信息系统', '信息网络', '信息终端', '信息中心',
-                         '信息化', '网络化', '工业信息', '工业通信']
+        '现代信息系统z': ['信息共享', '信息管理', '信息集成', '信息软件', '信息系统', '信息网络', '信息终端', '信息中心','信息化', '网络化', '工业信息', '工业通信']
     },  # 99
     '袁淳': ['信息', '联网', '数据', '互联网', '智能', '信息化', '人工智能', '数字化', '智能化', '关键技术', '信息技术',
              '电子商务', '通信', '核心技术', '产业链', '虚拟现实',
@@ -198,7 +197,7 @@ _EvaluationIndicatorSystem = {
     "发展能力": ["营业总收入增长率", "资本保值增值率B",  "总资产增长率B", "资本积累率B","营业利润增长率B",],
     '托宾Q值': ['托宾Q值B'],
     "供应链集中度指标表": ["营业总收入","客户集中度","供应商集中度"],
-    "研发投入情况表":["研发人员数量","研发人员数量占比(%)","研发投入金额","研发投入占营业收入比例(%)"],
+    "研发投入情况表":["研发人员数量","研发人员数量占比(%)","研发投入金额","研发投入占营业收入比例(%)","资本化研发投入(支出)占研发投入的比例(%)"],
     "中国上市公司股权性质": ["股权性质编码","前十大股东持股比例(%)", "两权分离率(%)"],
     "上市公司社会责任报告基本信息表":["纳税总额","社会捐赠额"],
     "高管人数、持股及薪酬情况表": ["董事人数", "其中：独立董事人数"],
@@ -207,13 +206,14 @@ _EvaluationIndicatorSystem = {
     "应付职工薪酬": ["应付职工薪酬"],
     "经营活动产生的现金流量净额":["总资产", "经营活动产生的现金流量净额", "员工数目"]
 }
-pos_indicators = ['存货周转率', "资产负债率(%)"]
-EvaluationIndicatorFormulaMap = {key:indicator for key, indicator in config['绩效评价指标公式'].items()}
+pos_indicators = ['存货周转率(%)', "资产负债率(%)"]
+
 
 
 def load_ind_table():
     ind_table = []
     i = 1
+    evaluation_indicator_formula_map = {key: indicator for key, indicator in config['绩效评价指标公式'].items()}
     for key, indicator in config['数字化企业绩效评价指标体系'].items():
         if key == "其他指标":
             continue
@@ -226,7 +226,7 @@ def load_ind_table():
                 "指标层": ind,
                 "变量": f"X{i}",
                 "性质": "负" if ind in pos_indicators else "正",
-                "计算公式": EvaluationIndicatorFormulaMap.get(ind.lower(), "")
+                "计算公式": evaluation_indicator_formula_map.get(ind.lower(), "")
             })
             i += 1
     return ind_table
@@ -305,5 +305,10 @@ def dump_formulation( latex=r"", filename="example", fontsize=12, lamb = 1.8):
     fig.set_size_inches(bbox.width / fig.dpi * lamb, bbox.height / fig.dpi)
     plt.savefig(filepath, transparent=True, bbox_inches='tight', pad_inches=0)
 
+
+
+
+
 if __name__ == '__main__':
-    pass
+    # print(config_path)
+    print(EvaluationIndicatorTable)
