@@ -174,3 +174,13 @@ def gra(matrix, w):
     min_ = data.min().min()
     df_r = (min_ * w + data) / (max_ * w + data)
     return df_r.mean(axis=1)
+
+
+def max_min_normalize(matrix, k):
+    # 极差归一化
+    max_ = matrix.max()
+    min_ = matrix.min()
+    max_matrix = (max_ - matrix) / (max_ - min_)
+    min_matrix = (matrix - min_) / (max_ - min_)
+    _matrix = [max_matrix.iloc[:, i] if (i < k) else min_matrix.iloc[:, i] for i in range(matrix.shape[1])]
+    return pd.DataFrame(_matrix).T

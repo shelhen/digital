@@ -1,0 +1,5 @@
+sgnyear [统计年度] - YYYY
+symbol [证券代码] - null
+shortname [证券简称] - null
+investitemnum [计划投资项目数] - 按数字化关键词筛选募集资金项目名称，进行汇总
+investtotalamount [计划投资总金额] - 按数字化关键词筛选募集资金项目名称，汇总项目计划投资的总金额。

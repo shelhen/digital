@@ -1,0 +1,5 @@
+sgnyear [统计年度] - YYYY
+symbol [证券代码] - null
+shortname [证券简称] - null
+iswonaward [是否获得数字国家级奖项] - 1=是；0=否（国家自然科学奖、国家技术发明奖、国家科学技术进步奖，获奖项目名称涉及数字化关键词，获奖作者单位为上市公司）
+awardnum [奖项数量] - null

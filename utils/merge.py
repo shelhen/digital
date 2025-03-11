@@ -20,7 +20,9 @@ from config import _EvaluationIndicatorSystem
 from config import base_path, KeywordBy
 warnings.filterwarnings('ignore')
 
-
+"""
+更新说明，咋
+"""
 def extract_corp_performance(info_path, start_year=2020):
     save_path = Path(__file__).parent.parent / 'data'
     corp_unfin_performance = pd.read_csv(save_path / "数字化单位及数字化程度(未筛选).csv", dtype={'股票代码': 'object'})
@@ -140,8 +142,79 @@ def extract_corp_mda():
     dataset.to_csv(base_path / 'MDA管理层讨论与分析.csv', index=False)
 
 
+def extract_indicator():
+
+    root_path = Path(__file__).parent.parent / 'data' / '所有指标'
+    files  = [root_path/ file.name for file in os.scandir(root_path)]
+    return files
+
+
+
+
+def process_content(files):
+    result = []
+    filters = [
+        "股票代码", "统计截止日期", "公告日期", "所属省份", "行业代码", "行业名称", "行业代码1", "行业名称1",
+        '证券代码', '股票简称', '证券简称', '数据来源', '公告来源', '行业代码C', '行业名称C', '股票简称', '上市状态',
+        '报表类型', '办公地址' '说明', '币种', '申请类型', '截止日期', '注册地址', "办公地址"
+    ]
+    for file in files:
+        temp = list()
+        try:
+            with open(file, 'r', encoding='utf-8') as f:
+                cons = f.readlines()
+            for cont in cons:
+                cont = cont.strip()
+                if not cont:
+                    continue
+                inds = cont.split(' ')
+                if len(inds) == 1:
+                    continue
+                ind = inds[1].strip(']').strip('[')
+                if ind in filters:
+                    continue
+                temp.append(ind)
+        except Exception as e:
+            print(f"wrong happened {e},{file}")
+        result.extend(temp)
+    result = sorted(list(set(result)))
+    print('、'.join(result))
+
+
+def search_ind(files, keywords):
+    # 给定指标，分词，将分词结果再所有文件中搜索，如果找到，返回文件名和相关指标，否则输出找不到
+    result = []
+    for filepath in files:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            cons = [cont.strip() for cont in f.readlines() if cont.strip()]
+        for con in cons:
+            for keyword in keywords:
+                if keyword in con:
+                    result.append({"source": filepath, "feature":con})
+    if len(result) == 0:
+        print("找不到相关指标")
+    else:
+        print("共搜索到{}个结果".format(len(result)))
+        for item in result:
+            print(f"来源:{item['source']}，name{item['feature']}")
+        # print("搜索结果：{}".format(result))
+    return result
+
+
+
+
 if __name__ == '__main__':
+    files = extract_indicator()
     info_path = Path(r'C://datas//企业绩效数据')
     # extract_corp_mda()
     # 将数字化数据提取存储在 base_path / '2010-2023企业数字化转型水平数据.csv'
-    extract_corp_performance(info_path, start_year=2014)
+    # extract_corp_performance(info_path, start_year=2014)
+    keywords = ["物流效率", "物流","订单","订单交付周期","交付","周期","供应链"]
+    search_ind(files, keywords)
+    # 数字化投资比重-软件及信息技术投资-生产流程自动化比例-数字化管理系统覆盖率-高管中IT背景占比
+    # 数字化战略表述
+    # 专利
+
+
+
+

@@ -1,0 +1,4 @@
+sgnyear [统计年度] - YYYY，申请公布日期所在年度
+symbol [证券代码] - null
+shortname [证券简称] - null
+diginvpatautnum [数字发明专利授权量] - 上市公司本身当年申请的发明专利已授权数量

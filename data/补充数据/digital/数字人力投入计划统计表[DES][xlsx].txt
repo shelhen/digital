@@ -1,0 +1,5 @@
+sgnmonth [统计月度] - YYYY-MM
+symbol [证券代码] - null
+shortname [证券简称] - null
+releasedemandtimes [发布需求次数] - 上市公司在招聘网站发布的数字职位招聘信息的条数之和，限定职能类别：计算机/互联网/通信/电子、软件研发、人工智能、数据工程师。
+recruitmentsnumber [招聘人数] - 相关数字职位招聘信息的需求人数之和，若发布的需求人数为空值或若干，则分别按空值=1，若干=5参与计算。

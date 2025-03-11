@@ -1,0 +1,5 @@
+sgnyear [统计年度] - YYYY
+symbol [证券代码] - null
+shortname [证券简称] - null
+pappubnumdomjour [国内期刊发表论文数量] - 来源中国知网，限定学科：计算机软件及计算机应用、互联网技术、电信技术
+pappubnumforjour [国外期刊发表论文数量] - 来源Scopus，限定学科：ComputerScience

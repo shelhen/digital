@@ -1,0 +1,5 @@
+sgnyear [统计年度] - YYYY
+symbol [证券代码] - null
+shortname [证券简称] - null
+protype [认定项目类型] - null
+volume [数量] - 该年度上市公司本身获得同一认定项目类型的数量
