@@ -107,7 +107,7 @@ def extract_corp_mda():
     """
     # 将txt 文本载入到csv中
     pattern1 = re.compile(r'\W')
-    pattern2 = re.compile(r'[^\u4E00-\u9FA5A-Za-z]')
+    pattern2 = re.compile(r'[^\u4E00-\u9FA5A-Za-z0-9]')
 
     keywords = KeywordBy['keywords']
     # 读取停用词
