@@ -1,6 +1,0 @@
-sgnyear [统计年度] - YYYY
-symbol [证券代码] - null
-shortname [证券简称] - null
-iscioset [是否设置首席信息官（CIO）] - 1-是；0-否
-isctoset [是否设置首席技术官（CTO）] - 1-是；0-否
-iscdoset [是否设置首席数字官（CDO）] - 1-是；0-否

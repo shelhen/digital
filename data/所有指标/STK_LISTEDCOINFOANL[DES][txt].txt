@@ -1,8 +1,0 @@
-Symbol [股票代码] - 上交所、深交所和北交所上市的证券代码。
-ShortName [股票简称] - 上交所、深交所和北交所上市上市的股票简称。
-EndDate [统计截止日期] - YYYY-MM-DD。
-IndustryCode [行业代码] - 
-IndustryCodeC [行业代码C] - 2012版证监会行业分类代码。
-LISTINGDATE [首次上市日期] - 上市公司首次上市日期
-PROVINCE [所属省份] - 上市公司注册地址所属省份
-LISTINGSTATE [上市状态] - 该字段来自招股意向书或上市公司临时公告。上市状态是该股票已出年报最新的股票状态。

@@ -1,4 +1,0 @@
-enddate [统计年度] - YYYY
-symbol [证券代码] - null
-shortname [证券简称] - null
-nstinnnbasesaccumulated [累计参与国家级科技创新基地建设数量] - 截止当年累计参与国家级科技创新基地建设的数量
